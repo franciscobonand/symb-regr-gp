@@ -46,8 +46,9 @@ func main() {
     // Run Fitness for initial population
     p, e := p.Evaluate(rmse, threads)
     best := p.Best(rmse)
-
+    b, w, m := p.FitnessStats()
     fmt.Printf("gen=%d evals=%d fit=%.4f\n", 0, e, best.Fitness)
+    fmt.Printf("gen=%d best=%.4f worst=%.4f mean=%.4f\n", 0, b, w, m)
 
     for i := 0; i < generations; i++ {
         // Selects new population
@@ -56,7 +57,9 @@ func main() {
         p, e = pop.ApplyGeneticOps(children, cross, mut, crossProb, mutProb).Evaluate(rmse, threads)
         // get best individual
         best = p.Best(rmse)
+        b, w, m = p.FitnessStats()
         fmt.Printf("gen=%d evals=%d fit=%.4f\n", i, e, best.Fitness)
+        fmt.Printf("gen=%d best=%.4f worst=%.4f mean=%.4f\n", i, b, w, m)
     }
 
     fmt.Println(best)

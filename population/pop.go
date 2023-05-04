@@ -1,13 +1,14 @@
 package pop
 
 import (
-    crand "crypto/rand"
-    "fmt"
-    "math/big"
-    "math/rand"
-    "sort"
+	crand "crypto/rand"
+	"fmt"
+	"math"
+	"math/big"
+	"math/rand"
+	"sort"
 
-    "github.com/franciscobonand/symb-regr-gp/operator"
+	"github.com/franciscobonand/symb-regr-gp/operator"
 )
 
 // Population is a slice of individuals
@@ -22,10 +23,12 @@ func CreatePopulation(popsize int, gen Generator) Population {
     return pop
 }
 
+// Len defines the Len interface method for sorting a Population
 func (pop Population) Len() int {
     return len(pop)
 }
 
+// Less defines the Less interface method for sorting a Population
 func (pop Population) Less(i, j int) bool {
     if !pop[i].FitnessValid {
         return false
@@ -33,9 +36,11 @@ func (pop Population) Less(i, j int) bool {
     if !pop[j].FitnessValid {
         return true
     }
+    // should use 'CompareFitness' method so this could be generic/customizable
     return pop[i].Fitness < pop[j].Fitness
 }
 
+// Swap defines the Swap interface method for sorting a Population
 func (pop Population) Swap(i, j int) {
     pop[i], pop[j] = pop[j], pop[i]
 }
@@ -75,6 +80,25 @@ func (pop Population) NBest(nind int) Population {
         nind = len(clone)
     }
     return clone[:nind]
+}
+
+// FitnessStats returns best, worst and mean fitness of a population
+func (pop Population) FitnessStats() (float64, float64, float64) {
+    var worst, mean float64
+    best := math.MaxFloat64
+    nIndiv := float64(len(pop))
+    for _, ind := range pop {
+        if ind.FitnessValid {
+            mean += ind.Fitness
+            if ind.Fitness < best {
+                best = ind.Fitness
+            }
+            if ind.Fitness > worst {
+                worst = ind.Fitness
+            }
+        }
+    }
+    return best, worst, mean/nIndiv
 }
 
 // A Generator is used to generate new individuals from the provided operations set
