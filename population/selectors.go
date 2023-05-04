@@ -14,15 +14,17 @@ type Selector interface {
 // tournament selection defines a structure to select individuals using the tournament method
 type tournament struct {
     tournamentSize int
+    elitismSize int
     indivSelector Selector
     evaluator Evaluator
 }
 
-func TournamentSelector(tsize int, e Evaluator) Selector {
+func TournamentSelector(elsize, tsize int, e Evaluator) Selector {
     return tournament{
-        tsize,
-        randomSel{},
-        e,
+        elitismSize: elsize,
+        tournamentSize: tsize,
+        indivSelector: randomSel{},
+        evaluator: e,
     }
 }
 
@@ -32,7 +34,10 @@ func (s tournament) String() string {
 
 func (s tournament) Select(pop Population, num int) Population {
     chosen := Population{}
-    for i := 0; i < num; i++ {
+    if s.elitismSize > 0 {
+        chosen = pop.NBest(s.elitismSize)
+    }
+    for i := 0; i < num - s.elitismSize; i++ {
         group := s.indivSelector.Select(pop, s.tournamentSize)
         best := group.Best(s.evaluator)
         if !best.FitnessValid {
@@ -44,10 +49,16 @@ func (s tournament) Select(pop Population, num int) Population {
 }
 
 // roulette defines a structure to select individuals using the roulette method
-type roulette struct{}
+type roulette struct {
+    elitismSize int
+    evaluator Evaluator
+}
 
-func RouletteSelector() Selector {
-    return roulette{}
+func RouletteSelector(elsize int, e Evaluator) Selector {
+    return roulette{
+        elitismSize: elsize,
+        evaluator: e,
+    }
 }
 
 func (s roulette) String() string {
@@ -58,27 +69,33 @@ func (s roulette) Select(pop Population, num int) Population {
     chosen := Population{}
     fitSum := 0.0
     for _, indiv := range pop {
-        fitSum += indiv.Fitness
+        fitSum += 1/indiv.Fitness
     }
-
-    for i := 0; i < num; i++ {
+    if s.elitismSize > 0 {
+        chosen = pop.NBest(s.elitismSize)
+    }
+    for i := 0; i < num - s.elitismSize; i++ {
         val := rand.Float64() * fitSum
-        for idx, indiv := range pop {
-            val -= indiv.Fitness
+        for idx := range pop {
+            val -= 1/pop[idx].Fitness
             if val <= 0 {
                 chosen = append(chosen, pop[idx])
+                break
             }
         }
     }
-
     return chosen
 }
 
 // randomSel defines a structure to select individuals at random
-type randomSel struct{}
+type randomSel struct{
+    elitismSize int
+}
 
-func RandomSelector() Selector {
-	return randomSel{}
+func RandomSelector(elsize int) Selector {
+	return randomSel{
+        elitismSize: elsize,
+    }
 }
 
 func (s randomSel) String() string {
@@ -87,7 +104,10 @@ func (s randomSel) String() string {
 
 func (s randomSel) Select(pop Population, num int) Population {
 	chosen := Population{}
-	for i := 0; i < num; i++ {
+    if s.elitismSize > 0 {
+        chosen = pop.NBest(s.elitismSize)
+    }
+	for i := 0; i < num - s.elitismSize; i++ {
 		chosen = append(chosen, pop[rand.Intn(len(pop))])
 	}
 	return chosen

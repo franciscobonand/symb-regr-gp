@@ -1,12 +1,13 @@
 package pop
 
 import (
-	crand "crypto/rand"
-	"fmt"
-	"math/big"
-	"math/rand"
+    crand "crypto/rand"
+    "fmt"
+    "math/big"
+    "math/rand"
+    "sort"
 
-	"github.com/franciscobonand/symb-regr-gp/operator"
+    "github.com/franciscobonand/symb-regr-gp/operator"
 )
 
 // Population is a slice of individuals
@@ -14,78 +15,106 @@ type Population []*Individual
 
 // CreatePopulation creates a new population of popsize using the provided generator
 func CreatePopulation(popsize int, gen Generator) Population {
-	pop := make(Population, popsize)
-	for i := range pop {
-		pop[i] = gen.Generate()
-	}
-	return pop
+    pop := make(Population, popsize)
+    for i := range pop {
+        pop[i] = gen.Generate()
+    }
+    return pop
+}
+
+func (pop Population) Len() int {
+    return len(pop)
+}
+
+func (pop Population) Less(i, j int) bool {
+    if !pop[i].FitnessValid {
+        return false
+    }
+    if !pop[j].FitnessValid {
+        return true
+    }
+    return pop[i].Fitness < pop[j].Fitness
+}
+
+func (pop Population) Swap(i, j int) {
+    pop[i], pop[j] = pop[j], pop[i]
 }
 
 // Print prints out every individual from a population
 func (pop Population) Print() {
-	for i, ind := range pop {
-		fmt.Printf("%4d: %s\n", i, *ind)
-	}
+    for i, ind := range pop {
+        fmt.Printf("%4d: %s\n", i, *ind)
+    }
 }
 
 // Clone makes a deep copy of all of the individuals in the population
 func (pop Population) Clone() Population {
-	newpop := make(Population, len(pop))
-	for i, ind := range pop {
-		newpop[i] = ind.Clone()
-	}
-	return newpop
+    newpop := make(Population, len(pop))
+    for i, ind := range pop {
+        newpop[i] = ind.Clone()
+    }
+    return newpop
 }
 
 // Best returns the individual with the best fitness
 func (pop Population) Best(e Evaluator) *Individual {
-	best := &Individual{}
-	for _, ind := range pop {
-		if ind.FitnessValid && (!best.FitnessValid || e.CompareFitness(ind.Fitness, best.Fitness)) {
-			best = ind
-		}
-	}
-	return best
+    best := &Individual{}
+    for _, ind := range pop {
+        if ind.FitnessValid && (!best.FitnessValid || e.CompareFitness(ind.Fitness, best.Fitness)) {
+            best = ind
+        }
+    }
+    return best
+}
+
+// NBest returns the first nind best individuals
+func (pop Population) NBest(nind int) Population {
+    clone := pop.Clone()
+    sort.Sort(clone)
+    if len(clone) < nind {
+        nind = len(clone)
+    }
+    return clone[:nind]
 }
 
 // A Generator is used to generate new individuals from the provided operations set
 type Generator interface {
-	Generate() *Individual
-	String() string
+    Generate() *Individual
+    String() string
 }
 
 // genBase is the base generator to be embedded by the other generators
 type genBase struct {
-	pset      *operator.OpSet
-	min, max  int
-	condition func(height, depth int) bool
-	name      string
+    pset      *operator.OpSet
+    min, max  int
+    condition func(height, depth int) bool
+    name      string
 }
 
 func (g genBase) String() string {
-	return g.name
+    return g.name
 }
 
 // Generate defines the core logic of the generators
 func (g genBase) Generate() *Individual {
-	code := operator.Expr{}
-	height := rand.Intn(1+g.max-g.min) + g.min
-	stack := []int{0}
-	depth := 0
-	for len(stack) > 0 {
-		depth, stack = stack[len(stack)-1], stack[:len(stack)-1]
-		if g.condition(height, depth) {
-			op := randomOp(g.pset.Terminals)
-			code = append(code, op)
-		} else {
-			op := randomOp(g.pset.Primitives)
-			code = append(code, op)
-			for i := 0; i < op.Arity(); i++ {
-				stack = append(stack, depth+1)
-			}
-		}
-	}
-	return &Individual{Code: code}
+    code := operator.Expr{}
+    height := rand.Intn(1+g.max-g.min) + g.min
+    stack := []int{0}
+    depth := 0
+    for len(stack) > 0 {
+        depth, stack = stack[len(stack)-1], stack[:len(stack)-1]
+        if g.condition(height, depth) {
+            op := randomOp(g.pset.Terminals)
+            code = append(code, op)
+        } else {
+            op := randomOp(g.pset.Primitives)
+            code = append(code, op)
+            for i := 0; i < op.Arity(); i++ {
+                stack = append(stack, depth+1)
+            }
+        }
+    }
+    return &Individual{Code: code}
 }
 
 // NewGrowGenerator returns a generator to produce individuals with irregular expression trees
@@ -136,17 +165,17 @@ func (rg rampedGenerator) Generate() *Individual {
 }
 
 func randomOp(list []operator.Opcode) operator.Opcode {
-	return list[rand.Intn(len(list))]
+    return list[rand.Intn(len(list))]
 }
 
 // SetSeed sets the given number as seed, or a random value if seed is <= 0
 func SetSeed(seed int64) int64 {
-	if seed <= 0 {
-		max := big.NewInt(2<<31 - 1)
-		rseed, _ := crand.Int(crand.Reader, max)
-		seed = rseed.Int64()
-	}
-	fmt.Println("random seed:", seed)
-	rand.Seed(seed)
-	return seed
+    if seed <= 0 {
+        max := big.NewInt(2<<31 - 1)
+        rseed, _ := crand.Int(crand.Reader, max)
+        seed = rseed.Int64()
+    }
+    fmt.Println("random seed:", seed)
+    rand.Seed(seed)
+    return seed
 }

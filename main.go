@@ -10,14 +10,14 @@ import (
 )
 
 var (
-    popSize, tournamentSize, threads, generations int
+    popSize, tournamentSize, threads, generations, nElitism int
     file, sel string
     crossProb, mutProb float64
     seed int64
 )
 
 func main() {
-    // ./symb-regr-gp -popsize 20 -selector tour -toursize 2 -gens 20 -threads 1 -file "abcd.csv" -cxprob 0.9 -mutprob 0.05 -seed 4132
+    // ./symb-regr-gp -popsize 20 -selector tour -toursize 2 -gens 20 -threads 1 -file "abcd.csv" -cxprob 0.9 -mutprob 0.05 -elitism 0 -seed 4132
     initializeFlags()
 
     // fmt.Println(popSize, tournamentSize, threads, file, crossProb, mutProb, seed)
@@ -35,11 +35,11 @@ func main() {
     // Define selection method and genetic operators
     var selector pop.Selector
     if sel == "rol" {
-        selector = pop.RouletteSelector() 
+        selector = pop.RouletteSelector(nElitism, rmse) 
     } else if sel == "tour" {
-        selector = pop.TournamentSelector(tournamentSize, rmse)
+        selector = pop.TournamentSelector(nElitism, tournamentSize, rmse)
     } else {
-        selector = pop.RandomSelector()
+        selector = pop.RandomSelector(nElitism)
     }
     mut := pop.MutationOp(gen)
     cross := pop.CrossoverOp()
@@ -65,8 +65,9 @@ func main() {
 
 func initializeFlags() {
     flag.IntVar(&popSize, "popsize", 20, "population size")
+    flag.IntVar(&nElitism, "elitism", 0, "number of best members of elitism")
     flag.IntVar(&tournamentSize, "toursize", 2, "tournament size")
-    flag.StringVar(&sel, "selector", "tour", "defines the selection method ('rol', 'tour' or 'rand'")
+    flag.StringVar(&sel, "selector", "tour", "defines the selection method ('rol', 'tour' or 'rand')")
     flag.IntVar(&generations, "gens", 10, "number of generations to run")
     flag.IntVar(&threads, "threads", 1, "quantity of threads to be used when evaluating")
     flag.StringVar(&file, "file", "", "csv file containing data to be processed")

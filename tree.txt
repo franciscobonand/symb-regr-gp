@@ -5,5 +5,5 @@ TODO:
     - size of individuals (bloating?)
     - # of repeated individuals
     - positive crossover offspring (better than parents mean fitness)
-- Add elitism option
 - Lexicase selection method
+- How to run doc
