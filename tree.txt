@@ -3,3 +3,7 @@ TODO:
     - size of individuals (bloating?)
     - # of repeated individuals
     - positive crossover offspring (better than parents mean fitness)
+<<<<<<< Updated upstream
+=======
+- Fix threading
+>>>>>>> Stashed changes
