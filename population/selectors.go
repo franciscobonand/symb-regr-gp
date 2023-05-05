@@ -175,6 +175,5 @@ func (s lexicase) Select(pop Population, num int) Population {
             cases.Output = append(cases.Output[:cIdx], cases.Output[cIdx+1:]...)
         }
     }
-
     return chosen
 }
