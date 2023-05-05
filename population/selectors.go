@@ -137,8 +137,10 @@ func (s lexicase) String() string {
 
 func (s lexicase) Select(pop Population, num int) Population {
     chosen := Population{}
-
-    for i := 0; i < num; i++ {
+    if s.elitismSize > 0 {
+        chosen = pop.NBest(s.elitismSize)
+    }
+    for i := 0; i < num - s.elitismSize; i++ {
         cases := s.ds.Copy()
         tempCandidates := pop.Clone()
         for {

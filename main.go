@@ -3,10 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"sync"
 
-	"github.com/franciscobonand/symb-regr-gp/operator"
 	"github.com/franciscobonand/symb-regr-gp/datasets"
+	"github.com/franciscobonand/symb-regr-gp/operator"
 	pop "github.com/franciscobonand/symb-regr-gp/population"
+	"github.com/franciscobonand/symb-regr-gp/stats"
 )
 
 var (
@@ -67,18 +69,19 @@ func main() {
 
     ds.Copy()
 
+    var wg sync.WaitGroup
+    wg.Add(generations)
     for i := 0; i < generations; i++ {
         // Selects new population
         children := selector.Select(p, len(p))
         // appleis genetic operators
         p, e = pop.ApplyGeneticOps(children, cross, mut, crossProb, mutProb).Evaluate(rmse, threads)
         // get best individual
-        best = p.Best(rmse)
-        b, w, m = p.FitnessStats()
-        fmt.Printf("gen=%d evals=%d fit=%.4f\n", i, e, best.Fitness)
-        fmt.Printf("gen=%d best=%.4f worst=%.4f mean=%.4f\n", i, b, w, m)
+        go stats.GetStats(&wg, i, e, p, rmse)
     }
 
+    wg.Wait()
+    best = p.Best(rmse)
     fmt.Println(best)
     // p.Print()
 }
