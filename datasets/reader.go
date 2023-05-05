@@ -16,6 +16,17 @@ type Dataset struct {
     Variables []string
 }
 
+func (ds Dataset) Copy() Dataset {
+    input := make([][]float64, len(ds.Input))
+    input = append(input, ds.Input...)
+    output := []float64{}
+    output = append(output, ds.Output...)
+    return Dataset{
+        Input: input,
+        Output: output,
+    }
+}
+
 // Read reads a file resided in the given path.
 // The path is relative to the directory the program is executed
 func Read(fpath string) (*Dataset, error) {

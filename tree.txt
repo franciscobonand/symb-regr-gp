@@ -1,9 +1,6 @@
 TODO:
 - Improve stats besides the best fitness
-    - worst fitness
-    - mean fitness
     - size of individuals (bloating?)
     - # of repeated individuals
     - positive crossover offspring (better than parents mean fitness)
-- Lexicase selection method
 - How to run doc

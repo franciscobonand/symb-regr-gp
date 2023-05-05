@@ -38,7 +38,9 @@ func main() {
         selector = pop.RouletteSelector(nElitism, rmse) 
     } else if sel == "tour" {
         selector = pop.TournamentSelector(nElitism, tournamentSize, rmse)
-    } else {
+    } else if sel == "lex" {
+        selector = pop.LexicaseSelector(nElitism, threads, rmse, ds.Copy())
+    }else {
         selector = pop.RandomSelector(nElitism)
     }
     mut := pop.MutationOp(gen)
@@ -49,6 +51,8 @@ func main() {
     b, w, m := p.FitnessStats()
     fmt.Printf("gen=%d evals=%d fit=%.4f\n", 0, e, best.Fitness)
     fmt.Printf("gen=%d best=%.4f worst=%.4f mean=%.4f\n", 0, b, w, m)
+
+    ds.Copy()
 
     for i := 0; i < generations; i++ {
         // Selects new population
@@ -70,7 +74,7 @@ func initializeFlags() {
     flag.IntVar(&popSize, "popsize", 20, "population size")
     flag.IntVar(&nElitism, "elitism", 0, "number of best members of elitism")
     flag.IntVar(&tournamentSize, "toursize", 2, "tournament size")
-    flag.StringVar(&sel, "selector", "tour", "defines the selection method ('rol', 'tour' or 'rand')")
+    flag.StringVar(&sel, "selector", "tour", "defines the selection method ('rol', 'tour', 'lex', or 'rand')")
     flag.IntVar(&generations, "gens", 10, "number of generations to run")
     flag.IntVar(&threads, "threads", 1, "quantity of threads to be used when evaluating")
     flag.StringVar(&file, "file", "", "csv file containing data to be processed")

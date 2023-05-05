@@ -3,6 +3,8 @@ package pop
 import (
 	"fmt"
 	"math/rand"
+
+	dataset "github.com/franciscobonand/symb-regr-gp/datasets"
 )
 
 // Selector is an interface for selecting individuals from population
@@ -88,7 +90,7 @@ func (s roulette) Select(pop Population, num int) Population {
 }
 
 // randomSel defines a structure to select individuals at random
-type randomSel struct{
+type randomSel struct {
     elitismSize int
 }
 
@@ -111,4 +113,68 @@ func (s randomSel) Select(pop Population, num int) Population {
 		chosen = append(chosen, pop[rand.Intn(len(pop))])
 	}
 	return chosen
+}
+
+// lexicase defines a structure to select individuals using the lexicase method
+type lexicase struct {
+    elitismSize, threads int
+    ds dataset.Dataset
+    evaluator Evaluator
+}
+
+func LexicaseSelector(elsize, threads int, e Evaluator, ds dataset.Dataset) Selector {
+    return lexicase{
+        elitismSize: elsize,
+        threads: threads,
+        evaluator: e,
+        ds: ds,
+    }
+}
+
+func (s lexicase) String() string {
+    return "LexicaseSelection"
+}
+
+func (s lexicase) Select(pop Population, num int) Population {
+    chosen := Population{}
+
+    for i := 0; i < num; i++ {
+        cases := s.ds.Copy()
+        tempCandidates := pop.Clone()
+        for {
+            // When there are no cases left, pick one indiv at random
+            if len(cases.Output) == 0 {
+                chosen = append(chosen, tempCandidates[rand.Intn(len(tempCandidates))])
+                break
+            }
+            cIdx := rand.Intn(len(cases.Output))
+            cin := [][]float64{ cases.Input[cIdx] }
+            cout := []float64{ cases.Output[cIdx] }
+            rmse := RMSE{
+                &dataset.Dataset{
+                    Input: cin,
+                    Output: cout,
+                },
+            }
+            auxcand, _ := tempCandidates.Evaluate(rmse, s.threads)
+            best := tempCandidates.Best(s.evaluator)
+            tempCandidates = Population{}
+            // Remove all indiv with fitness worse than the best fitness for this case
+            for _, ind := range auxcand {
+                if ind.Fitness == best.Fitness {
+                    tempCandidates = append(tempCandidates, ind)
+                }
+            }
+            // If there's only one candidate, it's chosen as parent
+            if len(tempCandidates) == 1 {
+                chosen = append(chosen, tempCandidates...)
+                break
+            }
+            // Remove used case
+            cases.Input = append(cases.Input[:cIdx], cases.Input[cIdx+1:]...)
+            cases.Output = append(cases.Output[:cIdx], cases.Output[cIdx+1:]...)
+        }
+    }
+
+    return chosen
 }
