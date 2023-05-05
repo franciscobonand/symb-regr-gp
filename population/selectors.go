@@ -122,10 +122,10 @@ type lexicase struct {
     evaluator Evaluator
 }
 
-func LexicaseSelector(elsize, threads int, e Evaluator, ds dataset.Dataset) Selector {
+func LexicaseSelector(elsize, t int, e Evaluator, ds dataset.Dataset) Selector {
     return lexicase{
         elitismSize: elsize,
-        threads: threads,
+        threads: t,
         evaluator: e,
         ds: ds,
     }

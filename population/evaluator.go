@@ -27,6 +27,7 @@ func (pop Population) Evaluate(eval Evaluator, threads int) (Population, int) {
 	chunkSize := evals / threads
 	if chunkSize < 1 {
 		chunkSize = 1
+        threads = 1
 	}
 	start := 0
 	end := chunkSize
