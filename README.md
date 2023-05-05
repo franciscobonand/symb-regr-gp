@@ -2,14 +2,14 @@
 
 ## Como executar o programa
 
-Primeiramente faça o download e instale a [versão mais recente da linguagem Golang](https://go.dev/doc/install).
+Primeiramente faça o download e instale a [versão mais recente da linguagem Golang](https://go.dev/doc/install).  
 Com a instalação realizada, basta executar o seguinte comando do diretório raiz desse repositório:
 
 ```sh
 go run .
 ```
 
-**Caso não deseje instalar o Golang, pode optar por executar o binário que se encontra na pasta `/bin`**
+**Caso não deseje instalar o Golang, pode optar por executar o binário que se encontra na pasta `/bin`**  
 Para isso, primeiro execute o comando:
 
 ```sh 
@@ -24,22 +24,22 @@ E então execute o programa com:
 
 ### Flags - Parametrização
 
-Ao executar o programa, flags podem ser utilizadas para definir alguns parâmetros da execução.
-As flags são definidas da forma `.bin/symb-regr-gp -flag1 valor1 -flag2 valor2` (ou `go run . -flag1 valor1 -flag2 valor2`) 
+Ao executar o programa, flags podem ser utilizadas para definir alguns parâmetros da execução.  
+As flags são definidas da forma `.bin/symb-regr-gp -flag1 valor1 -flag2 valor2` (ou `go run . -flag1 valor1 -flag2 valor2`)  
 São elas:
 
-| Flag       | Default                          | Tipo            | Descrição                                          |
-| ---------- | -------------------------------- | --------------- | -------------------------------------------------- |
-| \-popsize  | 20                               | Int > 0         | Tamanho da população                               |
-| \-gens     | 10                               | Int > 0         | Número de gerações a serem executadas              |
-| \-elitism  | 0                                | Int >= 0        | Número de indivíduos selecionados com elitismo     |
-| \-selector | tour                             | String          | Método de seleção ('rol', 'tour', 'lex' ou 'rand') |
-| \-toursize | 2                                | Int >= 2        | Tamanho do Torneio (caso esse método seja usado)   |
-| \-cxprob   | 0.9                              | 0 <= Float <= 1 | Probabilidade de realizar crossover                |
-| \-mutprob  | 0.05                             | 0 <= Float <= 1 | Probabilidade de realizar mutação                  |
-| \-file     | datasets/synth1/synth1-train.csv | String          | Path para o arquivo de entrada do programa         |
-| \-threads  | 1                                | Int > 0         | Quantidade de threads para avaliação em paralelo   |
-| \-seed     | 1                                | Int             | Semente aleatória                                  |
+| Flag        | Default                          | Tipo            | Descrição                                          |
+| ----------- | -------------------------------- | --------------- | -------------------------------------------------- |
+| \-popsize   | 20                               | Int > 0         | Tamanho da população                               |
+| \-gens      | 10                               | Int > 0         | Número de gerações a serem executadas              |
+| \-elitism   | 0                                | Int >= 0        | Número de indivíduos selecionados com elitismo     |
+| \-selector  | tour                             | String          | Método de seleção ('rol', 'tour', 'lex' ou 'rand') |
+| \-toursize  | 2                                | Int >= 2        | Tamanho do Torneio (caso esse método seja usado)   |
+| \-cxprob    | 0.9                              | 0 <= Float <= 1 | Probabilidade de realizar crossover                |
+| \-mutprob   | 0.05                             | 0 <= Float <= 1 | Probabilidade de realizar mutação                  |
+| \-file      | datasets/synth1/synth1-train.csv | String          | Path para o arquivo de entrada do programa         |
+| \-threads   | 1                                | Int > 0         | Quantidade de threads para avaliação em paralelo   |
+| \-seed      | 1                                | Int             | Semente aleatória                                  |
 
 Exemplo:
 
