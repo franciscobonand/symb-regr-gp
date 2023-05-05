@@ -4,6 +4,10 @@ TODO:
     - # of repeated individuals
     - positive crossover offspring (better than parents mean fitness)
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+- Fix threading
+>>>>>>> Stashed changes
 =======
 - Fix threading
 >>>>>>> Stashed changes
