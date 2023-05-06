@@ -95,3 +95,12 @@ func (pop Population) FitnessStats() (float64, float64, float64) {
     }
     return best, worst, mean/nIndiv
 }
+
+// GetRepeatedIndividuals returns the number of repeated individuals in a population
+func (pop Population) GetRepeatedIndividuals() int {
+    set := map[string]bool{}
+    for _, ind := range pop {
+        set[ind.String()] = true
+    }
+    return len(pop) - len(set)
+}

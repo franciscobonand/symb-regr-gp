@@ -58,7 +58,7 @@ func main() {
         selector = pop.TournamentSelector(nElitism, tournamentSize, rmse)
     } else if sel == "lex" {
         selector = pop.LexicaseSelector(nElitism, threads, rmse, ds.Copy())
-    }else {
+    } else {
         selector = pop.RandomSelector(nElitism)
     }
     mut := pop.MutationOp(gen)
@@ -75,7 +75,7 @@ func main() {
         // appleis genetic operators
         p, e = pop.ApplyGeneticOps(children, cross, mut, crossProb, mutProb).Evaluate(rmse, threads)
         // print new population stats
-        go stats.PrintStats(&wg, i, e, p, rmse)
+        go stats.PrintStats(&wg, i+1, e, p, rmse)
     }
 
     wg.Wait()
