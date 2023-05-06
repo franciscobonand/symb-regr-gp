@@ -67,15 +67,18 @@ func main() {
     p, e := p.Evaluate(rmse, threads)
 
     var wg sync.WaitGroup
+    var betterCxChild, worseCxChild int
     wg.Add(generations + 1)
-    go stats.PrintStats(&wg, 0, e, p, rmse)
+    fmt.Println("gen,evals,repeated,bestfit,worstfit,meanfit,maxsize,minsize,meansize,betterCxChild,worseCxChild")
+    go stats.PrintStats(&wg, 0, e, betterCxChild, worseCxChild, p, rmse)
     for i := 0; i < generations; i++ {
         // Selects new population
         children := selector.Select(p, len(p))
         // appleis genetic operators
-        p, e = pop.ApplyGeneticOps(children, cross, mut, crossProb, mutProb).Evaluate(rmse, threads)
+        p, betterCxChild, worseCxChild = pop.ApplyGeneticOps(children, cross, mut, crossProb, mutProb)
+        p,e = p.Evaluate(rmse, threads)
         // print new population stats
-        go stats.PrintStats(&wg, i+1, e, p, rmse)
+        go stats.PrintStats(&wg, i+1, e, betterCxChild, worseCxChild, p, rmse)
     }
 
     wg.Wait()
