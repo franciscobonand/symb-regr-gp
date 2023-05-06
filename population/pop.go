@@ -77,30 +77,45 @@ func (pop Population) NBest(nind int) Population {
     return clone[:nind]
 }
 
+type Stats struct {
+    BestFit, WorstFit, MeanFit float64
+    Repeated, MaxSize, MinSize, MeanSize int
+}
+
 // FitnessStats returns best, worst and mean fitness of a population
-func (pop Population) FitnessStats() (float64, float64, float64) {
-    var worst, mean float64
-    best := math.MaxFloat64
-    nIndiv := float64(len(pop))
+func (pop Population) GetStats() Stats {
+    stats := Stats{}
+    var worstfit, meanfit float64
+    bestfit := math.MaxFloat64
+    var maxsize, meansize int
+    minsize := math.MaxInt
+    set := map[string]bool{}
     for _, ind := range pop {
+        sz := ind.Size()
+        meansize += sz
+        if sz < minsize {
+            minsize = sz
+        }
+        if sz > maxsize {
+            maxsize = sz
+        }
+        set[ind.String()] = true
         if ind.FitnessValid {
-            mean += ind.Fitness
-            if ind.Fitness < best {
-                best = ind.Fitness
+            meanfit += ind.Fitness
+            if ind.Fitness < bestfit {
+                bestfit = ind.Fitness
             }
-            if ind.Fitness > worst {
-                worst = ind.Fitness
+            if ind.Fitness > worstfit {
+                worstfit = ind.Fitness
             }
         }
     }
-    return best, worst, mean/nIndiv
-}
-
-// GetRepeatedIndividuals returns the number of repeated individuals in a population
-func (pop Population) GetRepeatedIndividuals() int {
-    set := map[string]bool{}
-    for _, ind := range pop {
-        set[ind.String()] = true
-    }
-    return len(pop) - len(set)
+    stats.BestFit = bestfit
+    stats.WorstFit = worstfit
+    stats.MeanFit = meanfit/float64(len(pop))
+    stats.Repeated = len(pop) - len(set)
+    stats.MaxSize = maxsize
+    stats.MinSize = minsize
+    stats.MeanSize = meansize/len(pop)
+    return stats
 }

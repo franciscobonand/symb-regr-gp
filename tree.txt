@@ -1,4 +1,3 @@
 TODO:
 - Improve stats besides the best fitness
-    - size of individuals (bloating?)
     - positive crossover offspring (better than parents mean fitness)
