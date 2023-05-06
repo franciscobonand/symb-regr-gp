@@ -1,8 +1,11 @@
 package main
 
 import (
+	crand "crypto/rand"
 	"flag"
 	"fmt"
+	"math/big"
+	"math/rand"
 	"sync"
 
 	"github.com/franciscobonand/symb-regr-gp/datasets"
@@ -41,7 +44,7 @@ func main() {
         panic(err.Error())
     }
 
-    pop.SetSeed(seed)
+    setSeed(seed)
     opset := operator.CreateOpSet(ds.Variables...)
     gen := pop.NewRampedGenerator(opset, 1, 6)
     rmse := pop.RMSE{ DS: ds }
@@ -92,6 +95,18 @@ func initializeFlags() {
     flag.Float64Var(&mutProb, "mutprob", 0.05, "mutation probability")
     flag.Int64Var(&seed, "seed", 1, "seed for generating the initial population")
     flag.Parse()
+}
+
+// setSeed sets the given number as seed, or a random value if seed is <= 0
+func setSeed(seed int64) int64 {
+    if seed <= 0 {
+        max := big.NewInt(2<<31 - 1)
+        rseed, _ := crand.Int(crand.Reader, max)
+        seed = rseed.Int64()
+    }
+    fmt.Println("random seed:", seed)
+    rand.Seed(seed)
+    return seed
 }
 
 func allPositiveInts(nums... int) bool {
