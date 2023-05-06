@@ -47,3 +47,11 @@ Exemplo:
 go run . -popsize 100 -selector tour -toursize 2 -gens 10 -threads 1 -file "datasets/synth1/synth1-train.csv" -cxprob 0.9 -mutprob 0.05 -elitism 1 -seed 1111
 ```
 
+Também é possível ver a descrição das flags usando `--help`:
+
+```sh
+go run . --help
+// OU
+./bin/symb-regr-gp --help
+```
+

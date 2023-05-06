@@ -62,28 +62,22 @@ func main() {
     cross := pop.CrossoverOp()
     // Run Fitness for initial population
     p, e := p.Evaluate(rmse, threads)
-    best := p.Best(rmse)
-    b, w, m := p.FitnessStats()
-    fmt.Printf("gen=%d evals=%d fit=%.4f\n", 0, e, best.Fitness)
-    fmt.Printf("gen=%d best=%.4f worst=%.4f mean=%.4f\n", 0, b, w, m)
-
-    ds.Copy()
 
     var wg sync.WaitGroup
-    wg.Add(generations)
+    wg.Add(generations + 1)
+    go stats.PrintStats(&wg, 0, e, p, rmse)
     for i := 0; i < generations; i++ {
         // Selects new population
         children := selector.Select(p, len(p))
         // appleis genetic operators
         p, e = pop.ApplyGeneticOps(children, cross, mut, crossProb, mutProb).Evaluate(rmse, threads)
-        // get best individual
-        go stats.GetStats(&wg, i, e, p, rmse)
+        // print new population stats
+        go stats.PrintStats(&wg, i, e, p, rmse)
     }
 
     wg.Wait()
-    best = p.Best(rmse)
+    best := p.Best(rmse)
     fmt.Println(best)
-    // p.Print()
 }
 
 func initializeFlags() {
