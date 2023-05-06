@@ -40,6 +40,7 @@ São elas:
 | \-file      | datasets/synth1/synth1-train.csv | String          | Path para o arquivo de entrada do programa         |
 | \-threads   | 1                                | Int > 0         | Quantidade de threads para avaliação em paralelo   |
 | \-seed      | 1                                | Int             | Semente aleatória                                  |
+| \-getstats  | false                            | Bool            | Gera relatório da execução                         |
 
 Exemplo:
 

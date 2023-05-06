@@ -1,17 +1,17 @@
 package main
 
 import (
-	crand "crypto/rand"
-	"flag"
-	"fmt"
-	"math/big"
-	"math/rand"
-	"sync"
+    crand "crypto/rand"
+    "flag"
+    "fmt"
+    "math/big"
+    "math/rand"
+    "sync"
 
-	"github.com/franciscobonand/symb-regr-gp/datasets"
-	"github.com/franciscobonand/symb-regr-gp/operator"
-	pop "github.com/franciscobonand/symb-regr-gp/population"
-	"github.com/franciscobonand/symb-regr-gp/stats"
+    "github.com/franciscobonand/symb-regr-gp/datasets"
+    "github.com/franciscobonand/symb-regr-gp/operator"
+    pop "github.com/franciscobonand/symb-regr-gp/population"
+    "github.com/franciscobonand/symb-regr-gp/stats"
 )
 
 var (
@@ -19,10 +19,11 @@ var (
     file, sel string
     crossProb, mutProb float64
     seed int64
+    getstats bool
 )
 
 func main() {
-    // ./symb-regr-gp -popsize 20 -selector tour -toursize 2 -gens 20 -threads 1 -file "abcd.csv" -cxprob 0.9 -mutprob 0.05 -elitism 0 -seed 4132
+    // ./symb-regr-gp -popsize 20 -selector tour -toursize 2 -gens 20 -threads 1 -file "abcd.csv" -cxprob 0.9 -mutprob 0.05 -elitism 0 -seed 4132 -getstats
     initializeFlags()
 
     if !allPositiveInts(popSize, threads, generations) {
@@ -44,46 +45,86 @@ func main() {
         panic(err.Error())
     }
 
-    setSeed(seed)
-    opset := operator.CreateOpSet(ds.Variables...)
-    gen := pop.NewRampedGenerator(opset, 1, 6)
-    rmse := pop.RMSE{ DS: ds }
-    // Create initial population
-    p := pop.CreatePopulation(popSize, gen)
-    // Define selection method and genetic operators
-    var selector pop.Selector
-    if sel == "rol" {
-        selector = pop.RouletteSelector(nElitism, rmse) 
-    } else if sel == "tour" {
-        selector = pop.TournamentSelector(nElitism, tournamentSize, rmse)
-    } else if sel == "lex" {
-        selector = pop.LexicaseSelector(nElitism, threads, rmse, ds.Copy())
-    } else {
-        selector = pop.RandomSelector(nElitism)
-    }
-    mut := pop.MutationOp(gen)
-    cross := pop.CrossoverOp()
-    // Run Fitness for initial population
-    p, e := p.Evaluate(rmse, threads)
-
-    var wg sync.WaitGroup
-    var betterCxChild, worseCxChild int
-    wg.Add(generations + 1)
-    fmt.Println("gen,evals,repeated,bestfit,worstfit,meanfit,maxsize,minsize,meansize,betterCxChild,worseCxChild")
-    go stats.PrintStats(&wg, 0, e, betterCxChild, worseCxChild, p, rmse)
-    for i := 0; i < generations; i++ {
-        // Selects new population
-        children := selector.Select(p, len(p))
-        // appleis genetic operators
-        p, betterCxChild, worseCxChild = pop.ApplyGeneticOps(children, cross, mut, crossProb, mutProb)
-        p,e = p.Evaluate(rmse, threads)
-        // print new population stats
-        go stats.PrintStats(&wg, i+1, e, betterCxChild, worseCxChild, p, rmse)
+    var runqnt int64 = 1
+    var run int64
+    if getstats {
+        runqnt = 30
     }
 
-    wg.Wait()
-    best := p.Best(rmse)
-    fmt.Println(best)
+    rundata := [][]float64{}
+    for run = 0; run < runqnt; run++ {
+        setSeed(seed + run)
+        opset := operator.CreateOpSet(ds.Variables...)
+        gen := pop.NewRampedGenerator(opset, 1, 6)
+        rmse := pop.RMSE{ DS: ds }
+        // Create initial population
+        p := pop.CreatePopulation(popSize, gen)
+        // Define selection method and genetic operators
+        var selector pop.Selector
+        if sel == "rol" {
+            selector = pop.RouletteSelector(nElitism, rmse) 
+        } else if sel == "tour" {
+            selector = pop.TournamentSelector(nElitism, tournamentSize, rmse)
+        } else if sel == "lex" {
+            selector = pop.LexicaseSelector(nElitism, threads, rmse, ds.Copy())
+        } else {
+            selector = pop.RandomSelector(nElitism)
+        }
+        mut := pop.MutationOp(gen)
+        cross := pop.CrossoverOp()
+        // Run Fitness for initial population
+        p, e := p.Evaluate(rmse, threads)
+
+        var betterCxChild, worseCxChild float64
+        var wg sync.WaitGroup
+        if !getstats {
+            wg.Add(generations + 1)
+            fmt.Println("gen,evals,repeated,bestfit,worstfit,meanfit,maxsize,minsize,meansize,betterCxChild,worseCxChild")
+            go stats.PrintRunStats(&wg, 0, float64(e), betterCxChild, worseCxChild, p, rmse)
+        }
+
+        rundata = append(rundata, stats.GetRunStats(0.0, float64(e), betterCxChild, worseCxChild, p, rmse))                
+        fgen := float64(generations)
+        for i := 0.0; i < fgen; i++ {
+            // Selects new population
+            children := selector.Select(p, len(p))
+            // appleis genetic operators
+            p, betterCxChild, worseCxChild = pop.ApplyGeneticOps(children, cross, mut, crossProb, mutProb)
+            p, e = p.Evaluate(rmse, threads)
+            // print new population stats
+            if getstats {
+                rundata = append(rundata, stats.GetRunStats(i+1.0, float64(e), betterCxChild, worseCxChild, p, rmse))                
+            } else {
+                go stats.PrintRunStats(&wg, i+1.0, float64(e), betterCxChild, worseCxChild, p, rmse) 
+            }
+        }
+
+        if !getstats {
+            wg.Wait()
+        }
+        best := p.Best(rmse)
+        fmt.Println(best)
+    }
+    if getstats {
+        output := [][]float64{}
+        fmt.Println("Writing stats to file...")
+        for k := 0; k <= generations; k++ {
+            currgen := []float64{}
+            for col := 1; col < len(rundata[0]); col++ {
+                acc := 0.0
+                for lin := k; lin < len(rundata); lin += (generations + 1) {
+                    acc += rundata[lin][col]
+                }
+                currgen = append(currgen, acc/30.0)
+            }
+            output = append(output, currgen)
+        }
+        if err := dataset.Write(output); err != nil {
+            fmt.Println("(ERROR) failed to write stats file:", err.Error())
+        } else {
+            fmt.Println("Stats file available in 'analysis/data.csv'")
+        }
+    }
 }
 
 func initializeFlags() {
@@ -97,6 +138,7 @@ func initializeFlags() {
     flag.Float64Var(&crossProb, "cxprob", 0.9, "crossover probability")
     flag.Float64Var(&mutProb, "mutprob", 0.05, "mutation probability")
     flag.Int64Var(&seed, "seed", 1, "seed for generating the initial population")
+    flag.BoolVar(&getstats, "getstats", false, "generate stats file")
     flag.Parse()
 }
 
@@ -107,7 +149,6 @@ func setSeed(seed int64) int64 {
         rseed, _ := crand.Int(crand.Reader, max)
         seed = rseed.Int64()
     }
-    fmt.Println("random seed:", seed)
     rand.Seed(seed)
     return seed
 }

@@ -7,9 +7,9 @@ import (
 	pop "github.com/franciscobonand/symb-regr-gp/population"
 )
 
-func PrintStats(wg *sync.WaitGroup, gen, evals, bCxChild, wCxChild int, p pop.Population, e pop.Evaluator) {
+func PrintRunStats(wg *sync.WaitGroup, gen, evals , bCxChild, wCxChild float64, p pop.Population, e pop.Evaluator) {
     s := p.GetStats()
-    fmt.Printf("%d,%d,%d,%.4f,%.4f,%.4f,%d,%d,%d,%d,%d\n",
+    fmt.Printf("%.1f,%.1f,%.1f,%.3f,%.3f,%.3f,%.1f,%.1f,%.1f,%.1f,%.1f\n",
         gen,
         evals,
         s.Repeated,
@@ -23,5 +23,23 @@ func PrintStats(wg *sync.WaitGroup, gen, evals, bCxChild, wCxChild int, p pop.Po
         wCxChild,
     )
     wg.Done()
+}
+
+func GetRunStats(gen, evals , bCxChild, wCxChild float64, p pop.Population, e pop.Evaluator) []float64 {
+    s := p.GetStats()
+    data := []float64{
+        gen,
+        evals,
+        s.Repeated,
+        s.BestFit,
+        s.WorstFit,
+        s.MeanFit,
+        s.MaxSize,
+        s.MinSize,
+        s.MeanSize,
+        bCxChild,
+        wCxChild,
+    }
+    return data
 }
 

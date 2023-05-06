@@ -78,8 +78,7 @@ func (pop Population) NBest(nind int) Population {
 }
 
 type Stats struct {
-    BestFit, WorstFit, MeanFit float64
-    Repeated, MaxSize, MinSize, MeanSize int
+    Repeated, MaxSize, MinSize, MeanSize, BestFit, WorstFit, MeanFit float64
 }
 
 // FitnessStats returns best, worst and mean fitness of a population
@@ -87,11 +86,11 @@ func (pop Population) GetStats() Stats {
     stats := Stats{}
     var worstfit, meanfit float64
     bestfit := math.MaxFloat64
-    var maxsize, meansize int
-    minsize := math.MaxInt
+    var maxsize, meansize float64
+    minsize := math.MaxFloat64
     set := map[string]bool{}
     for _, ind := range pop {
-        sz := ind.Size()
+        sz := float64(ind.Size())
         meansize += sz
         if sz < minsize {
             minsize = sz
@@ -113,9 +112,9 @@ func (pop Population) GetStats() Stats {
     stats.BestFit = bestfit
     stats.WorstFit = worstfit
     stats.MeanFit = meanfit/float64(len(pop))
-    stats.Repeated = len(pop) - len(set)
+    stats.Repeated = float64(len(pop) - len(set))
     stats.MaxSize = maxsize
     stats.MinSize = minsize
-    stats.MeanSize = meansize/len(pop)
+    stats.MeanSize = meansize/float64(len(pop))
     return stats
 }

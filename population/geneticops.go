@@ -63,8 +63,8 @@ func CrossoverOp() Variation {
 
 // ApplyGeneticOps applies crossover and/or mutation operators based on their probability.
 // Both operators can be applied in the same individual
-func ApplyGeneticOps(pop Population, cross, mutate Variation, cxProb, mutProb float64) (Population, int, int) {
-    var betterchild, worsechild int
+func ApplyGeneticOps(pop Population, cross, mutate Variation, cxProb, mutProb float64) (Population, float64, float64) {
+    var betterchild, worsechild float64
     cxindivs := Population{}
     totalfit := 0.0
 	offspring := pop.Clone()

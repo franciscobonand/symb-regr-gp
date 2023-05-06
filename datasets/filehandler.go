@@ -3,6 +3,7 @@ package dataset
 import (
 	"bufio"
 	"fmt"
+	"io/fs"
 	"os"
 	"strconv"
 	"strings"
@@ -64,4 +65,25 @@ func Read(fpath string) (*Dataset, error) {
     }
 
     return &ds, nil
+}
+
+func Write(data [][]float64) error {
+    content := "gen,evals,repeated,bestfit,worstfit,meanfit,maxsize,minsize,meansize,betterCxChild,worseCxChild\n"
+    for i, line := range data {
+        content += fmt.Sprintf("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",
+            i,
+            line[0],
+            line[1],
+            line[2],
+            line[3],
+            line[4],
+            line[5],
+            line[6],
+            line[7],
+            line[8],
+            line[9],
+        )
+    }
+    bcontent := []byte(content)
+    return os.WriteFile("analysis/data.csv", bcontent, fs.ModeAppend)
 }
