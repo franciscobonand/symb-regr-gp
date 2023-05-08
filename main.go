@@ -1,17 +1,17 @@
 package main
 
 import (
-    crand "crypto/rand"
-    "flag"
-    "fmt"
-    "math/big"
-    "math/rand"
-    "sync"
+	crand "crypto/rand"
+	"flag"
+	"fmt"
+	"math/big"
+	"math/rand"
+	"sync"
 
-    "github.com/franciscobonand/symb-regr-gp/datasets"
-    "github.com/franciscobonand/symb-regr-gp/operator"
-    pop "github.com/franciscobonand/symb-regr-gp/population"
-    "github.com/franciscobonand/symb-regr-gp/stats"
+	"github.com/franciscobonand/symb-regr-gp/datasets"
+	"github.com/franciscobonand/symb-regr-gp/operator"
+	pop "github.com/franciscobonand/symb-regr-gp/population"
+	"github.com/franciscobonand/symb-regr-gp/stats"
 )
 
 var (
