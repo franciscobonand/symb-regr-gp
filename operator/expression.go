@@ -1,6 +1,8 @@
 package operator
 
-import "math/rand"
+import (
+	"math/rand"
+)
 
 // Opcode is an individual's genome smallest part
 type Opcode interface {

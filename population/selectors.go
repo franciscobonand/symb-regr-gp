@@ -71,16 +71,20 @@ func (s roulette) String() string {
 func (s roulette) Select(pop Population, num int) Population {
     chosen := Population{}
     fitSum := 0.0
+    percSum := 0.0
     for _, indiv := range pop {
-        fitSum += 1/indiv.Fitness
+        fitSum += indiv.Fitness
+    }
+    for _, indiv := range pop {
+        percSum += (1 - indiv.Fitness/fitSum)
     }
     if s.elitismSize > 0 {
         chosen = pop.NBest(s.elitismSize)
     }
     for i := 0; i < num - s.elitismSize; i++ {
-        val := rand.Float64() * fitSum
+        val := rand.Float64() * percSum
         for idx := range pop {
-            val -= 1/pop[idx].Fitness
+            val -= (1 - pop[idx].Fitness/fitSum)
             if val <= 0 {
                 chosen = append(chosen, pop[idx])
                 break

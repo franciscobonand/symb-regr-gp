@@ -35,27 +35,39 @@ func (v *variation) Variate(in Population) Population {
 }
 
 // MutationOp returns a mutation variation
-func MutationOp(gen Generator) Variation {
+func MutationOp(gen Generator, eval Evaluator) Variation {
 	mutate := func(ind Population) Population {
-		tree := ind[0].Code
+		tree := ind[0].Code.Clone()
 		pos := rand.Intn(len(tree))
 		newtree := gen.Generate().Code
-		ind[0] = Create(tree.ReplaceSubtree(pos, newtree))
+        newcode := tree.ReplaceSubtree(pos, newtree)
+        newfit, _ := eval.GetFitness(newcode)
+        if newfit < ind[0].Fitness {
+            ind[0] = Create(newcode)
+        }
 		return ind
 	}
 	return &variation{mutate, fmt.Sprintf("Mutation(%s)", gen)}
 }
 
 // CrossoverOp returns a crossover variation
-func CrossoverOp() Variation {
+func CrossoverOp(eval Evaluator) Variation {
 	cross := func(ind Population) Population {
 		if ind[0].Size() < 2 || ind[1].Size() < 2 {
 			return ind
 		}
 		pos1, subtree1 := ind[0].Code.RandomSubtree()
 		pos2, subtree2 := ind[1].Code.RandomSubtree()
-		ind[0] = Create(ind[0].Code.ReplaceSubtree(pos1, subtree2))
-		ind[1] = Create(ind[1].Code.ReplaceSubtree(pos2, subtree1))
+        newcode := ind[0].Code.Clone().ReplaceSubtree(pos1, subtree2)
+        newfit, _ := eval.GetFitness(newcode)
+        if newfit < ind[0].Fitness {
+            ind[0] = Create(newcode)
+        }
+        newcode = ind[1].Code.Clone().ReplaceSubtree(pos2, subtree1)
+        newfit, _ = eval.GetFitness(newcode)
+        if newfit < ind[1].Fitness {
+            ind[1] = Create(newcode)
+        }
 		return ind
 	}
 	return &variation{cross, "Crossover"}

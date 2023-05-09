@@ -70,8 +70,8 @@ func main() {
         } else {
             selector = pop.RandomSelector(nElitism)
         }
-        mut := pop.MutationOp(gen)
-        cross := pop.CrossoverOp()
+        mut := pop.MutationOp(gen, rmse)
+        cross := pop.CrossoverOp(rmse)
         // Run Fitness for initial population
         p, e := p.Evaluate(rmse, threads)
 
