@@ -1,25 +1,25 @@
 package main
 
 import (
-	crand "crypto/rand"
-	"flag"
-	"fmt"
-	"math/big"
-	"math/rand"
-	"sync"
+    crand "crypto/rand"
+    "flag"
+    "fmt"
+    "math/big"
+    "math/rand"
+    "sync"
+    "time"
 
-	"github.com/franciscobonand/symb-regr-gp/datasets"
-	"github.com/franciscobonand/symb-regr-gp/operator"
-	pop "github.com/franciscobonand/symb-regr-gp/population"
-	"github.com/franciscobonand/symb-regr-gp/stats"
+    "github.com/franciscobonand/symb-regr-gp/datasets"
+    "github.com/franciscobonand/symb-regr-gp/operator"
+    pop "github.com/franciscobonand/symb-regr-gp/population"
+    "github.com/franciscobonand/symb-regr-gp/stats"
 )
 
 var (
     popSize, tournamentSize, threads, generations, nElitism int
-    file, sel string
+    file, sel, statsfile string
     crossProb, mutProb float64
     seed int64
-    getstats bool
 )
 
 func main() {
@@ -47,6 +47,7 @@ func main() {
 
     var runqnt int64 = 1
     var run int64
+    getstats := statsfile != ""
     if getstats {
         runqnt = 30
     }
@@ -64,7 +65,7 @@ func main() {
         if sel == "rol" {
             selector = pop.RouletteSelector(nElitism, rmse) 
         } else if sel == "tour" {
-            selector = pop.TournamentSelector(nElitism, tournamentSize, rmse)
+            selector = pop.TournamentSelector(nElitism, tournamentSize, threads, rmse)
         } else if sel == "lex" {
             selector = pop.LexicaseSelector(nElitism, threads, rmse, ds.Copy())
         } else {
@@ -83,6 +84,7 @@ func main() {
             go stats.PrintRunStats(&wg, 0, float64(e), betterCxChild, worseCxChild, p, rmse)
         }
 
+        start := time.Now() 
         rundata = append(rundata, stats.GetRunStats(0.0, float64(e), betterCxChild, worseCxChild, p, rmse))                
         fgen := float64(generations)
         for i := 0.0; i < fgen; i++ {
@@ -103,6 +105,7 @@ func main() {
             wg.Wait()
         }
         best := p.Best(rmse)
+        fmt.Println(time.Since(start))
         fmt.Println(best)
     }
     if getstats {
@@ -119,10 +122,10 @@ func main() {
             }
             output = append(output, currgen)
         }
-        if err := dataset.Write(output); err != nil {
+        if err := dataset.Write(statsfile, output); err != nil {
             fmt.Println("(ERROR) failed to write stats file:", err.Error())
         } else {
-            fmt.Println("Stats file available in 'analysis/data.csv'")
+            fmt.Printf("Stats file available in 'analysis/%s'\n", statsfile)
         }
     }
 }
@@ -132,13 +135,13 @@ func initializeFlags() {
     flag.IntVar(&nElitism, "elitism", 0, "number of best members of elitism")
     flag.IntVar(&tournamentSize, "toursize", 2, "tournament size")
     flag.StringVar(&sel, "selector", "tour", "defines the selection method ('rol', 'tour', 'lex', or 'rand')")
+    flag.StringVar(&statsfile, "statsfile", "", "generate stats and saves into given file")
     flag.IntVar(&generations, "gens", 10, "number of generations to run")
     flag.IntVar(&threads, "threads", 1, "quantity of threads to be used when evaluating")
     flag.StringVar(&file, "file", "datasets/synth1/synth1-train.csv", "csv file containing data to be processed")
     flag.Float64Var(&crossProb, "cxprob", 0.9, "crossover probability")
     flag.Float64Var(&mutProb, "mutprob", 0.05, "mutation probability")
     flag.Int64Var(&seed, "seed", 1, "seed for generating the initial population")
-    flag.BoolVar(&getstats, "getstats", false, "generate stats file")
     flag.Parse()
 }
 

@@ -67,7 +67,7 @@ func Read(fpath string) (*Dataset, error) {
     return &ds, nil
 }
 
-func Write(data [][]float64) error {
+func Write(fname string, data [][]float64) error {
     content := "gen,evals,repeated,bestfit,worstfit,meanfit,maxsize,minsize,meansize,betterCxChild,worseCxChild\n"
     for i, line := range data {
         content += fmt.Sprintf("%d,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",
@@ -85,5 +85,6 @@ func Write(data [][]float64) error {
         )
     }
     bcontent := []byte(content)
-    return os.WriteFile("analysis/data.csv", bcontent, fs.ModeAppend)
+    f := fmt.Sprintf("analysis/%s", fname)
+    return os.WriteFile(f, bcontent, fs.ModePerm)
 }

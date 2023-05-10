@@ -18,14 +18,16 @@ type Selector interface {
 type tournament struct {
     tournamentSize int
     elitismSize int
+    threads int
     indivSelector Selector
     evaluator Evaluator
 }
 
-func TournamentSelector(elsize, tsize int, e Evaluator) Selector {
+func TournamentSelector(elsize, tsize, t int, e Evaluator) Selector {
     return tournament{
         elitismSize: elsize,
         tournamentSize: tsize,
+        threads: t,
         indivSelector: randomSel{},
         evaluator: e,
     }
@@ -40,15 +42,45 @@ func (s tournament) Select(pop Population, num int) Population {
     if s.elitismSize > 0 {
         chosen = pop.NBest(s.elitismSize)
     }
-    for i := 0; i < num - s.elitismSize; i++ {
+
+    threads := s.threads
+    chunkSize := (num - s.elitismSize) / threads
+    if chunkSize < 1 {
+        chunkSize = 1
+        threads = 1
+    }
+    start := 0
+    end := chunkSize
+    cn := make(chan *Individual, num - s.elitismSize)
+    var wg sync.WaitGroup
+    wg.Add(threads)
+    for chunk := 0; chunk < threads; chunk++ {
+        if chunk == threads - 1 {
+            end = (num - s.elitismSize)
+        }
+        go s.tourSelection(&wg, start, end, pop, cn)
+        start += chunkSize
+        end += chunkSize
+    }
+    wg.Wait()
+    close(cn)
+    for ind := range cn {
+        chosen = append(chosen, ind)
+    }
+    return chosen
+}
+
+
+func (s tournament) tourSelection(wg *sync.WaitGroup, start, end int, pop Population, cn chan *Individual) {
+    for i := start; i < end; i++ {
         group := s.indivSelector.Select(pop, s.tournamentSize)
         best := group.Best(s.evaluator)
         if !best.FitnessValid {
             panic("no best individual found!")
         }
-        chosen = append(chosen, best)
+        cn <- best
     }
-    return chosen
+    wg.Done()
 }
 
 // roulette defines a structure to select individuals using the roulette method
@@ -193,7 +225,7 @@ func (s lexicase) lexSelection(wg *sync.WaitGroup, start, end int, pop *Populati
                     Output: cout,
                 },
             }
-            auxcand, _ := tempCandidates.Evaluate(rmse, s.threads)
+            auxcand, _ := tempCandidates.Evaluate(rmse, 1)
             best := tempCandidates.Best(s.evaluator)
             tempCandidates = Population{}
             // Remove all indiv with fitness worse than the best fitness for this case
