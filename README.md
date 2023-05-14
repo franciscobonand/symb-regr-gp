@@ -1,5 +1,7 @@
 # Programação Genética - Regressão Simbólica
 
+O trabalho foi desenvolvido [nesse repositório do GitHub](https://github.com/franciscobonand/symb-regr-gp).  
+
 Regressão simbólica é uma técnica utilizada para descobrir fórmulas ou equações matemáticas que descrevem com certa precisão um conjunto de dados de entrada e saída.  
 
 Programação genética é uma forma de computação evolutiva inspirada no processo de seleção natural.
