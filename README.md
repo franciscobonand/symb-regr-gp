@@ -28,19 +28,19 @@ Ao executar o programa, flags podem ser utilizadas para definir alguns parâmetr
 As flags são definidas da forma `.bin/symb-regr-gp -flag1 valor1 -flag2 valor2` (ou `go run . -flag1 valor1 -flag2 valor2`)  
 São elas:
 
-| Flag        | Default                          | Tipo            | Descrição                                          |
-| ----------- | -------------------------------- | --------------- | -------------------------------------------------- |
-| \-popsize   | 20                               | Int > 0         | Tamanho da população                               |
-| \-gens      | 10                               | Int > 0         | Número de gerações a serem executadas              |
-| \-elitism   | 0                                | Int >= 0        | Número de indivíduos selecionados com elitismo     |
-| \-selector  | tour                             | String          | Método de seleção ('rol', 'tour', 'lex' ou 'rand') |
-| \-toursize  | 2                                | Int >= 2        | Tamanho do Torneio (caso esse método seja usado)   |
-| \-cxprob    | 0.9                              | 0 <= Float <= 1 | Probabilidade de realizar crossover                |
-| \-mutprob   | 0.05                             | 0 <= Float <= 1 | Probabilidade de realizar mutação                  |
-| \-file      | datasets/synth1/synth1-train.csv | String          | Path para o arquivo de entrada do programa         |
-| \-threads   | 1                                | Int > 0         | Quantidade de threads para avaliação em paralelo   |
-| \-seed      | 1                                | Int             | Semente aleatória                                  |
-| \-getstats  | false                            | Bool            | Gera relatório da execução                         |
+| Flag         | Default                          | Tipo            | Descrição                                               |
+| ------------ | -------------------------------- | --------------- | ------------------------------------------------------- |
+| \-popsize    | 20                               | Int > 0         | Tamanho da população                                    |
+| \-gens       | 10                               | Int > 0         | Número de gerações a serem executadas                   |
+| \-elitism    | 0                                | Int >= 0        | Número de indivíduos selecionados com elitismo          |
+| \-selector   | tour                             | String          | Método de seleção ('rol', 'tour', 'lex' ou 'rand')      |
+| \-toursize   | 2                                | Int >= 2        | Tamanho do Torneio (caso esse método seja usado)        |
+| \-cxprob     | 0.9                              | 0 <= Float <= 1 | Probabilidade de realizar crossover                     |
+| \-mutprob    | 0.05                             | 0 <= Float <= 1 | Probabilidade de realizar mutação                       |
+| \-file       | datasets/synth1/synth1-train.csv | String          | Path para o arquivo de entrada do programa              |
+| \-threads    | 1                                | Int > 0         | Quantidade de threads para avaliação em paralelo        |
+| \-seed       | 1                                | Int             | Semente aleatória                                       |
+| \-statsfile  | ""                               | String          | Gera relatório da execução e salva em arquivo informado |
 
 Exemplo:
 
