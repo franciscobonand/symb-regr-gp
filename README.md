@@ -111,7 +111,7 @@ Dessa forma, o valor da fitness sempre será um número não negativo, e quanto 
 
 O erro quadrático médio é definido pela seguinte fórmula:  
 
-!["Fórmula RMSE"](/images/rmse.png "Fórmula do erro quadrático médio")
+![Fórmula RMSE](/images/rmse.png "Fórmula do erro quadrático médio")
 
 Onde:
 - *Ind* é o indivíduo sendo avaliado;
@@ -123,7 +123,31 @@ No caso da implementação feita, um indivíduo é avaliado com todos os dados f
 
 ### Métodos de seleção
 
+Nesse programa, foram implementados os métodos de seleção Aleatório, Roleta, Torneio e Lexicase.  
+Todos os métodos implementados podem ser utilizados com ou sem elitismo, e a quantidade de indivíduos do elitismo é um dos parâmetros de execução do programa.
 
+#### Aleatório
+ 
+Esse método foi implementado para servir como base na análise dos demais métodos de seleção. Espera-se que ele possua o pior desempenho entre todos.  
+Na seleção aleatória, indivíduos da população pai são randomicamente selecionados para comporem a próxima geração.
+
+#### Roleta
+
+No método da roleta, ou seleção proporcional à fitness, indivíduos são selecionados aleatoriamente da população pai, porém aqueles com melhor fitness têm maior probabilidade de serem escolhidos.
+
+![Roleta](/images/rol-selection.svg "Seleção por Roleta")
+
+**É válido ressaltar que o uso do erro quadrático médio para cálculo da fitness implica que indivíduos com menor fitness são melhores.**  
+
+O cálculo das proporções da roleta é feito da seguinte forma:
+
+- Obtem-se o valor da soma de todas as fitness de uma população (`fitSum`);
+- A partir desse valor, obtem-se o valor da soma do percentual que a fitness de cada indivíduo representa da fitness total (`percSum`);
+    - Como fitness menores são melhores, para cada indivíduo o cálculo feito é `percSum += (1 - fitnessDoIndividuo/fitSum)`;
+- É escolhido um número aleatório entre 0.0 e `percSum` (`val`);
+- Enquanto `val` for positivo, escolhe-se um indivíduo aleatório e é subtraído de `val` o valor do percentual que a fitness do indivíduo representa da fitness total;
+    - `val -= (1 - fitnessDoIndividuo/fitSum)`;
+- Quando essa subtração fizer com que `val` seja menor ou igual a zero, o indivíduo é adicionado à nova população. Isso é repetido até que a nova população tenha a quantidade de indivíduos igual à da população inicial;
 
 ### Operadores genéticos
 
