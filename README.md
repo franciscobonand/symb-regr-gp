@@ -196,3 +196,16 @@ Por fim, o nó que havia sido selecionado é substituído por essa nova árvore 
 ![Mutação](/images/mutation.svg "Mutação")
 
 #### Crossover
+
+Para realizar o crossover entre dois indivíduos, é selecionada uma subárvore aleatoriamente da árvore de cada um dos indivíduos.
+Em seguida, a subárvore do indivíduo 2 é colocada no lugar da subárvore do indivíduo 1, e vice-versa.
+
+![Crossover](/images/cx.svg "Crossover")
+
+## Análises
+
+As análises realizadas a partir dos [dados fornecidos](/datasets) podem ser encontradas no [Jupyter Notebook presente nesse repositório](CompNatTP1.ipynb).  
+Alternativamente, as análises podem ser visualizadas acessando [esse link](https://colab.research.google.com/drive/1AWovkcjQS9xYW5QSmYPZGCevDP12N0un?usp=sharing).  
+Os resultados usados para análise podem ser encontrados na pasta ['analysis'](/analysis).  
+
+## Conclusão
