@@ -1,5 +1,18 @@
 # Programação Genética - Regressão Simbólica
 
+Regressão simbólica é uma técnica utilizada para descobrir fórmulas ou equações matemáticas que descrevem com certa precisão um conjunto de dados de entrada e saída.  
+
+Programação genética é uma forma de computação evolutiva inspirada no processo de seleção natural.
+Ela usa operadores genéticos, como mutação, cruzamento e seleção, para evoluir uma população de soluções candidatas em direção a uma solução ótima.  
+
+O programa aqui implementado combina essas duas técnicas para descobrir automaticamente fórmulas matemáticas que descrevem com precisão um determinado conjunto de dados de entrada e saída.
+O programa começa gerando uma população inicial de indivíduos (que representam fórmulas aleatórias), que são evoluídas ao longo de múltiplas gerações usando operadores genéticos.
+A aptidão (fitness) de cada fórmula é avaliada com base em quão bem ela se ajusta aos dados alvo.
+
+Nesta documentação, é fornecida uma explicação detalhada do algoritmo do programa, seus recursos e como usá-lo para resolver o problema de regressão simbólica.
+Além disso, é também disponibilizado um Jupyter Notebook contento análises após executar o programa com os dados de entrada que podem ser encontrados [nessa pasta](/datasets).
+Os dados resultantes da execução do programa que foram utilizados nas análises podem ser encontrados [nessa pasta](/analysis).
+
 ## Como executar o programa
 
 Primeiramente faça o download e instale a [versão mais recente da linguagem Golang](https://go.dev/doc/install).  
