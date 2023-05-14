@@ -94,7 +94,7 @@ type Individual struct {
 O conjunto de funções escolhidas para o programa foram adição, subtração, divisão e multiplicação.
 O número de variáveis disponíveis (x0, x1, ..., xN) varia conforme a quantidade de variáveis presentes no arquivo de entrada usado na execução do programa. 
 
-![Representação de um indivíduo](./images/indiv-representation.svg "Heap, árvore derivada e expressão resultante")
+![Representação de um indivíduo](/images/indiv-representation.svg "Heap, árvore derivada e expressão resultante")
 
 #### Geração da população
 
