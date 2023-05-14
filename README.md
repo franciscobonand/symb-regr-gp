@@ -3,7 +3,7 @@
 Regressão simbólica é uma técnica utilizada para descobrir fórmulas ou equações matemáticas que descrevem com certa precisão um conjunto de dados de entrada e saída.  
 
 Programação genética é uma forma de computação evolutiva inspirada no processo de seleção natural.
-Ela usa operadores genéticos, como mutação, cruzamento e seleção, para evoluir uma população de soluções candidatas em direção a uma solução ótima.  
+Ela usa operadores genéticos, como mutação, crossover e seleção, para evoluir uma população de soluções candidatas em direção a uma solução ótima.  
 
 O programa aqui implementado combina essas duas técnicas para descobrir automaticamente fórmulas matemáticas que descrevem com precisão um determinado conjunto de dados de entrada e saída.
 O programa começa gerando uma população inicial de indivíduos (que representam fórmulas aleatórias), que são evoluídas ao longo de múltiplas gerações usando operadores genéticos.
@@ -209,3 +209,18 @@ Alternativamente, as análises podem ser visualizadas acessando [esse link](http
 Os resultados usados para análise podem ser encontrados na pasta ['analysis'](/analysis).  
 
 ## Conclusão
+
+O programa implementado, que usa programação genética para resolver o problema de regressão simbólica, apresentou resultados interessantes.
+Ao combinar programação genética e regressão simbólica, foi capaz de descobrir automaticamente fórmulas matemáticas que descrevem com boa precisão um determinado conjunto de dados de entrada e saída,
+principalmente dado que foram utilizadas apenas funções de adição, multiplicação, subtração e adição.
+
+As experimentações com diferentes métodos de seleção e operadores genéticos revelaram algumas resultados interessantes.
+A pressão seletiva adicionada nos operadores genéticos teve um impacto positivo no programa, fazendo com que a fitness geral da população convergisse.
+Além disso, pode-se observar que a seleção lexicase começou a convergir para o resultado final mais rapidamente do que a seleção por torneio, mas, no final, o torneio teve um resultado melhor.
+
+Ademais, o uso de elitismo nos métodos de seleção foi positivo, gerando resultados melhores para todos os métodos de seleção.
+Por fim, também foi observado que uma maior chance de mutação dos indivíduos parece ter um impacto mais positivo no resultado final do que aumentar a probabilidade de crossover.
+
+No geral, o programa fornece uma ferramenta boa e relativamente simples para descobrir fórmulas matemáticas que descrevem dados de entrada e saída.
+Espera-se que esta documentação tenha fornecido uma visão abrangente do algoritmo do programa, seus recursos e como usá-lo para resolver o problema de regressão simbólica.
+
