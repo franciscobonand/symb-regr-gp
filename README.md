@@ -75,8 +75,8 @@ Nesse tópico serão apresentadas as principais estruturas utilizadas no program
 
 ### Indivíduo
 
-Os indivíduos de uma população são representados por uma árvore, de altura máxima 7.
-Além da árvore que representa seu genoma, a estrutura de um indivíduo também armazena o valor da Fitness, a altura da árvore e um campo booleano que diz se o indivíduo possui fitness válida ou não (a fitness só é inválida em casos de exceção ao criar/avaliar um indivíduo).   
+Os indivíduos de uma população são representados por uma árvore, de altura máxima 7.  
+Além da árvore, que representa seu genoma, a estrutura de um indivíduo também armazena o valor da Fitness, a altura da árvore e um campo booleano que diz se o indivíduo possui fitness válida ou não (a fitness só é inválida em casos de exceção ao criar/avaliar um indivíduo).   
 
 ```go
 // Individual is a member of the population. Code represents its genome
@@ -101,13 +101,25 @@ O número de variáveis disponíveis (x0, x1, ..., xN) varia conforme a quantida
 Uma população, formada por um conjunto de indivíduos, é inicialmente gerada utilizando o método *Ramped half-and-half*.  
 Esse método é basicamente uma combinação dos métodos *Grow* e *Full*.  
 
-- Grow: O `Opcode` de um nó da árvore é escolhido considerando elementos dos conjuntos de variáveis e funções, considerando a altura máxima. Produz árvores com formas irregulares.
-- Full: O `Opcode` de um nó da árvore é escolhido apenas considerando as funções, até que a profundidade máxima da árvore seja alcançada. A partir desse momento, é considerado apenas o conjunto de variáveis. Produz árvores balanceadas.
-
+- Grow: Os `Opcode`s da árvore são escolhidos considerando elementos dos conjuntos de variáveis e funções, considerando a altura máxima. Produz árvores com formas irregulares.
+- Full: Os `Opcode`s da árvore são escolhidos apenas considerando as funções, até que a profundidade máxima da árvore seja alcançada. A partir desse momento, é considerado apenas o conjunto de variáveis. Produz árvores balanceadas.
 
 ### Fitness
 
+A fitness é definida utilizando o método do erro quadrático médio ao se avaliar a `Expr` de um indivíduo, substituindo as variáveis pelos respectivos valores dados como entrada do programa.
+Dessa forma, o valor da fitness sempre será um número não negativo, e quanto mais próxima de 0 (zero) for a fitness de um indivíduo, melhor ela é.
 
+O erro quadrático médio é definido pela seguinte fórmula:  
+
+!["Fórmula RMSE"](/images/rmse.png "Fórmula do erro quadrático médio")
+
+Onde:
+- *Ind* é o indivíduo sendo avaliado;
+- EVAL(*Ind, x*) avalia a `Expr` do indivíduo *Ind* no conjunto de entrada fornecido *x*;
+- *y* é a saída correta da função para a entrada *x*
+- *N* é o número de exemplos fornecidos.
+
+No caso da implementação feita, um indivíduo é avaliado com todos os dados fornecidos como entrada para o programa.
 
 ### Métodos de seleção
 
