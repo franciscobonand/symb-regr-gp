@@ -7,7 +7,6 @@ import (
     "math/big"
     "math/rand"
     "sync"
-    "time"
 
     "github.com/franciscobonand/symb-regr-gp/datasets"
     "github.com/franciscobonand/symb-regr-gp/operator"
@@ -84,7 +83,6 @@ func main() {
             go stats.PrintRunStats(&wg, 0, float64(e), betterCxChild, worseCxChild, p, rmse)
         }
 
-        start := time.Now() 
         rundata = append(rundata, stats.GetRunStats(0.0, float64(e), betterCxChild, worseCxChild, p, rmse))                
         fgen := float64(generations)
         for i := 0.0; i < fgen; i++ {
@@ -105,7 +103,6 @@ func main() {
             wg.Wait()
         }
         best := p.Best(rmse)
-        fmt.Println(time.Since(start))
         fmt.Println(best)
     }
     if getstats {
