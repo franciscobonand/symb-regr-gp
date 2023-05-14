@@ -178,3 +178,21 @@ Se não houverem mais exemplos a serem avaliados, escolhe-se um indivíduo aleat
 
 ### Operadores genéticos
 
+Os operadores genéticos presentes nessa implementação são Mutação e Crossover.
+As probabilidades de indivíduos sofrerem mutação ou crossover são independentes, ou seja, um indivíduo pode passar tanto por crossover quanto por mutação em uma iteração.
+Além disso, caso os novos indivíduos gerados a partir da aplicação dos operadores genéticos extrapolem o tamanho máximo permitido de seu genoma, eles são substituídos por seus pais.  
+
+Optou-se por adicionar uma maior pressão seletiva, de forma que novos indivíduos frutos de crossover e/ou mutação que possuam fitness pior que a de seus pais sejam substituídos pelos pais.  
+Isso foi feito pois inicialmente, quando essa pressão seletiva não havia sido implementada, os valores da fitness do pior indivíduo e da fitness média da população eram muito erráticos.
+Isto é, após a evolução por diversas gerações, a fitness do melhor indivíduo convergia, mas as demais fitness possuíam variações absurdas de valor a cada geração 
+(na geração *N-1* a fitness média poderia estar próxima da melhor fitness, mas na geração *N* mudar para um valor 1000x maior que a melhor fitness).
+
+#### Mutação
+
+Para realizar a mutação, primeiramente é selecionado de forma aleatória um nó da árvore do indivíduo.
+Em seguida, é gerada uma nova árvore utilizando o método *Ramped half-and-half*.
+Por fim, o nó que havia sido selecionado é substituído por essa nova árvore que foi gerada.
+
+![Mutação](/images/mutation.svg "Mutação")
+
+#### Crossover
