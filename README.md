@@ -149,5 +149,32 @@ O cálculo das proporções da roleta é feito da seguinte forma:
     - `val -= (1 - fitnessDoIndividuo/fitSum)`;
 - Quando essa subtração fizer com que `val` seja menor ou igual a zero, o indivíduo é adicionado à nova população. Isso é repetido até que a nova população tenha a quantidade de indivíduos igual à da população inicial;
 
+#### Torneio
+
+No método do torneio, primeiramente define-se o tamanho de torneio `K` (esse parâmetro é definido na execução do programa).  
+Para cada iteração, são escolhidos aleatoriamente `K` indivíduos da população pai, e dentre esses indivíduos apenas o melhor deles é adicionado na nova população.  
+Esse processo é repetido, com reposição, até a nova população tenha a mesma quantidade de indivíduos do que a população pai.
+
+![Torneio](/images/tour-selection.svg "Seleção por Torneio")
+
+É importante ressaltar que, quanto maior for o valor de `K`, maior a pressão seletiva é empregada, e a diversidade da população é diminuída.
+Isso dá-se pelo fato de que, com um valor de `K` grande, há maior probabilidade de um mesmo melhor indivíduo ser selecionado a cada iteração do torneio.
+
+#### Lexicase
+
+No método lexicase, os indivíduos são avaliados com base em um subconjunto aleatório dos dados fornecidos como entrada para o problema,
+e apenas indivíduos com a melhor fitness para esse subconjunto são adicionados à nova população.
+
+A execução do lexicase que foi implementada nesse programa é feita da seguinte forma:
+
+1. Inicialmente, todos os indivíduos da população são considerados candidatos para seleção;
+2. É selecionado, de forma aleatória, um dos casos do conjunto de exemplos fornecidos como entrada para o programa;
+3. Indivíduos candidatos são avaliados para esse caso, e aqueles com fitness pior que a melhor fitness para esse caso são removidos do conjunto de candidatos;
+4. Se houver mais de um indivíduo no conjunto de candidatos, o caso atual é removido do conjunto de exemplos e os passos 2 e 3 são repetidos.
+Se houver apenas um indivíduo no conjunto de candidatos, ele é adicionado à nova população.
+Se não houverem mais exemplos a serem avaliados, escolhe-se um indivíduo aleatoriamente do conjunto de candidatos;
+
+![Lexicase](/images/lex-selection.svg "Seleção Lexicase, com 1 indivíduo restante no conjunto de candidatos")
+
 ### Operadores genéticos
 
